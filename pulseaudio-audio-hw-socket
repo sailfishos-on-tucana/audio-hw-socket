@@ -1,0 +1,11 @@
+#!/bin/sh
+# Hand the systemd-provided audio_hw_socket to the vendor audio HAL loaded
+# in PulseAudio, like Android init does for vendor.audio-hal-2-0.
+fd=3
+for name in $(echo "$LISTEN_FDNAMES" | tr ':' ' '); do
+    if [ "$name" = audio_hw_socket ]; then
+        export ANDROID_SOCKET_audio_hw_socket=$fd
+    fi
+    fd=$((fd + 1))
+done
+exec "$@"

@@ -1,0 +1,18 @@
+[Unit]
+Description=Android audio_hw_socket for the audio HAL inside PulseAudio
+ConditionUser=!root
+
+[Socket]
+ListenSequentialPacket=/dev/socket/audio_hw_socket
+SocketMode=0666
+FileDescriptorName=audio_hw_socket
+RemoveOnStop=yes
+Service=pulseaudio.service
+# Keep the path hidden until PulseAudio is ready: the HAL crashes if it
+# accepts an ultrasound request while module-droid-card is still loading.
+# pulseaudio.service puts it back with ExecStartPost.
+ExecStartPost=/bin/mv -f /dev/socket/audio_hw_socket /dev/socket/.audio_hw_socket
+ExecStopPost=-/bin/rm -f /dev/socket/.audio_hw_socket
+
+[Install]
+WantedBy=sockets.target
